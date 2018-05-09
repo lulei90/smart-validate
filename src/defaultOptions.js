@@ -6,7 +6,7 @@ const defaultRules={
   name:/^[\u4E00-\u9FA5]+(·| |.)?[\u4e00-\u9fa5]+$/,
   phone: /^1[0-9]{10}$/,
   bank:/^[0-9]{16,19}$/,
-  string: /^[\u4E00-\u9FA5\uf900-\ufa2d\w\.\s]+$/,
+  string: /^[\u4E00-\u9FA5\uf900-\ufa2d\w\s.]+$/,
   postcode: /^[0-9]{6}$/,
   idcard: function (value) {
     const Wi = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2, 1]; // 加权因子;
