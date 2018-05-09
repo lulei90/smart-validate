@@ -1,2 +1,2 @@
 # redux-form-validating
-validate for redux-form
+Simple syncValidate with redux-form
