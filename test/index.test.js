@@ -48,15 +48,15 @@ describe('正确值测试',()=>{
   })
 })
 describe('默认值提示验证测试',()=>{
-  const synValidate = validate({schema});
+  const syncValidate = validate({schema});
   it('默认空值提示测试',()=>{
-    const error = synValidate({});
+    const error = syncValidate({});
     for (const key in error){
       expect(error[key]).to.equal(defaultNullTip.def);
     }
   })
   it('默认错误提示验证测试',()=>{
-    const error = synValidate(errorValues);
+    const error = syncValidate(errorValues);
     const errorLength = Object.keys(error).length;
     const schemaLength = Object.keys(schema).length;
     expect(errorLength).to.be.at.least(schemaLength);
@@ -72,25 +72,25 @@ describe('默认值提示验证测试',()=>{
 })
 
 describe('自定义提示测试',()=>{
-  const synValidate = validate({
+  const syncValidate = validate({
     schema,
     errorTip,
     nullTip
   });
   it('自定义空值测试',()=>{
-    const error = synValidate({});
+    const error = syncValidate({});
     delete error._error;
     expect(error).to.eql(nullTip);
   })
   it('自定义错误提示测试',()=>{
-    const error = synValidate(errorValues);
+    const error = syncValidate(errorValues);
     delete error._error;
     expect(error).to.eql(errorTip)
   })
 })
 
 describe('覆盖默认规则测试',()=>{
-  const synValidate = validate({
+  const syncValidate = validate({
     schema:{
       name:'name'
     },
@@ -102,17 +102,17 @@ describe('覆盖默认规则测试',()=>{
     }
   })
   it('默认规则失效',()=>{
-    const error = synValidate({name:'卢云俊'});
+    const error = syncValidate({name:'卢云俊'});
     expect(error.name).to.equal('只能填英文了哦')
   })
   it('新规则有效',()=>{
-    const error = synValidate({name:'lulei'});
+    const error = syncValidate({name:'lulei'});
     expect(error).to.eql({})
   })
 })
 
 describe('函数返回值的提示',()=>{
-  const synValidate = validate({
+  const syncValidate = validate({
     schema:{
       money:(value)=>{
         if(value>100){
@@ -126,24 +126,24 @@ describe('函数返回值的提示',()=>{
     }
   })
   it('当验证规则是函数时，如果验证失败并且函数返回值不等于false时提示信息为函数的返回值',()=>{
-    const error1 = synValidate({
+    const error1 = syncValidate({
       money:101
     })
     expect(error1.money).to.equal('金额不能大于100');
-    const error2 = synValidate({
+    const error2 = syncValidate({
       money:-1
     })
     expect(error2.money).to.equal('金额不能小于0');
   })
 })
 describe('函数返回值的提示',()=>{
-  const synValidate = validate({
+  const syncValidate = validate({
     schema:{
       name:'null'
     }
   });
   it('当验证规则是字符串，并且不在默认规则里时',()=>{
-    const error = synValidate({
+    const error = syncValidate({
       name:'123123'
     });
     expect(error.name).to.equal('null规则未定义');
