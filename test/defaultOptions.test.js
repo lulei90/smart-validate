@@ -1,6 +1,6 @@
 import {expect} from 'chai';
 import {defaultRules} from '../src/defaultOptions';
-const {required,number,email,url,name,phone,bank,string,postcode,idcard} = defaultRules;
+const {required,number,email,url,name,phone,bank,string,postcode,ignore,idcard} = defaultRules;
 
 describe('required规则测试',()=>{
   it(`全由空字符组成的值，应该是无效的`,()=>{
@@ -129,7 +129,17 @@ describe('postcode规则测试',()=>{
     expect(postcode.test('4344000')).to.be.false;
   })
 })
-
+describe('ignore规则测试',()=>{
+  it('无论值是什么，应该都有效',()=>{
+    expect(ignore(true)).to.be.true
+    expect(ignore(false)).to.be.true
+    expect(ignore(undefined)).to.be.true
+    expect(ignore(null)).to.be.true
+    expect(ignore('')).to.be.true
+    expect(ignore('abcd')).to.be.true
+    expect(ignore(1231)).to.be.true
+  })
+})
 describe('idcard规则测试',()=>{
   it('当值是身份证号时，因该是有效的',()=>{
     expect(idcard('141181198011175052')).to.be.true;
@@ -142,3 +152,4 @@ describe('idcard规则测试',()=>{
     expect(idcard('15020019840112606X1')).to.be.false;
   })
 })
+;
