@@ -136,3 +136,16 @@ describe('函数返回值的提示',()=>{
     expect(error2.money).to.equal('金额不能小于0');
   })
 })
+describe('函数返回值的提示',()=>{
+  const synValidate = validate({
+    schema:{
+      name:'null'
+    }
+  });
+  it('当验证规则是字符串，并且不在默认规则里时',()=>{
+    const error = synValidate({
+      name:'123123'
+    });
+    expect(error.name).to.equal('null规则未定义');
+  })
+})

@@ -14,6 +14,12 @@ function validate({schema={},rules={},errorTip={},nullTip={}}){
   function check(rule,key,values,error){
     const ruleType = _rules[rule] || rule;
     const _check = (ruleType.test && ruleType.test.bind(ruleType)) || ruleType;
+    if(typeof _check === 'string'){
+      let info = `${_check}规则未定义`;
+      console.error(info);
+      error[key] = info;
+      return false;
+    }
     let flag = _check(values[key],values,key);
     if(flag === true) return true;
     //错误提示 可以是方法返回的字符串，初始化定义或默认

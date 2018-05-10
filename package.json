@@ -1,10 +1,15 @@
 {
-  "name": "redux-form-validate",
-  "version": "0.0.1",
+  "name": "redux-form-validating",
+  "version": "0.0.3",
   "description": "Simple validation with redux-form",
-  "main": "index.js",
+  "main": "lib/index.js",
+  "files": [
+    "lib"
+  ],
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "copy": "./node_modules/.bin/babel ./src --copy-files --out-dir ./lib",
+    "prepublish":"npm run test && npm run copy"
   },
   "repository": {
     "type": "git",
@@ -23,6 +28,7 @@
   },
   "homepage": "https://github.com/lulei90/redux-form-validating#readme",
   "devDependencies": {
+    "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
     "babel-preset-es2015": "^6.24.1",
     "chai": "^4.1.2",
