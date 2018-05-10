@@ -8,7 +8,8 @@ const defaultRules={
   bank:/^[0-9]{16,19}$/,
   string: /^[\u4E00-\u9FA5\uf900-\ufa2d\w\s.]+$/,
   postcode: /^[0-9]{6}$/,
-  idcard: function (value) {
+  ignore:()=>true,
+  idcard:(value)=>{
     const Wi = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2, 1]; // 加权因子;
     const ValideCode = [1, 0, 10, 9, 8, 7, 6, 5, 4, 3, 2]; // 身份证验证位值，10代表X;
     if (value.length === 18) {
