@@ -47,18 +47,19 @@ export default class Form extends Component{
     }
   }
   render(){
-	  return(<form>
-	    <label>
-	      <span>用户名:</span>
-	      <Field component="input" type="tel" name="userphone" placeholder="请输入手机号" maxLength={11}/>
-	    </label>
-	    <label>
-	      <span>密码:</span>
-	      <Field component="input" type='password' name="userpwd" placeholder="请输入密码"/>
-	    </label>
-       <button onClick={handleSubmit(this.submitForm)}>登录</button>
+    const {handleSubmit} = this.props;
+    return(<form>
+      <label>
+        <span>用户名:</span>
+        <Field component="input" type="tel" name="userphone" placeholder="请输入手机号" maxLength={11}/>
+      </label>
+      <label>
+        <span>密码:</span>
+        <Field component="input" type='password' name="userpwd" placeholder="请输入密码"/>
+      </label>
+      <button onClick={handleSubmit(this.submitForm)}>登录</button>
     </form>)
-	}
+  }
 }
 ```
 
