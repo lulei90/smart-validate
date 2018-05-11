@@ -1,4 +1,4 @@
-import { defaultRules,defaultErrorTip,defaultNullTip } from './defaultOptions'
+import { defaultRules,defaultErrorTip,defaultNullTip } from './options'
 /***
  *
  * @param schema 需要验证的模型
@@ -7,7 +7,8 @@ import { defaultRules,defaultErrorTip,defaultNullTip } from './defaultOptions'
  * @param nullTip 自定义的为空提示
  * @returns {Function} 返回一个加工好的验证方法 接受values对象用之前配置的验证计划来验证
  */
-function validate({schema={},rules={},errorTip={},nullTip={}}){
+function validate(options={}){
+  const {schema={},rules={},errorTip={},nullTip={}} = options;
   const _rules=Object.assign({},defaultRules,rules);
   const _errorTip=Object.assign({},defaultErrorTip,errorTip);
   const _nullTip=Object.assign({},defaultNullTip,nullTip);

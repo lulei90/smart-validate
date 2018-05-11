@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import {defaultNullTip,defaultErrorTip} from "../src/defaultOptions";
+import {defaultNullTip,defaultErrorTip} from "../src/options";
 import validate from "../src";
 
 let schema = {
@@ -156,5 +156,27 @@ describe('当规则格式不正确，或是不存在于默认规则和自定义�
     });
     const errorFn=syncValidate.bind(syncValidate,{name:'123123'});
     expect(errorFn).to.throw('null规则不在默认和自定义的规则中');
+  })
+})
+describe('当初始参数不对时',()=>{
+  it('当初始参数为空时，默认验证不包含任何信息',()=>{
+    const syncValidate = validate();
+    const error=syncValidate(errorValues);
+    expect(error).to.eql({});
+  })
+  it('当初始参数类型不是预定类型时，默认验证不包含任何信息',()=>{
+    const syncValidate = validate('123123');
+    const error=syncValidate(errorValues);
+    expect(error).to.eql({});
+  })
+  it('当初始参数内部字段不是预定类型时',()=>{
+    const syncValidate = validate({
+      schema:1234,
+      nullTip:'abcd',
+      errorTip:()=>{},
+      rules:[]
+    });
+    const error=syncValidate(errorValues);
+    expect(error).to.eql({});
   })
 })
