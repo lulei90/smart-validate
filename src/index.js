@@ -15,10 +15,7 @@ function validate({schema={},rules={},errorTip={},nullTip={}}){
     const ruleType = _rules[rule] || rule;
     const _check = (ruleType.test && ruleType.test.bind(ruleType)) || ruleType;
     if(typeof _check === 'string'){
-      let info = `${_check}规则未定义`;
-      console.error(info);
-      error[key] = info;
-      return false;
+      throw (new TypeError(`${_check}规则不在默认和自定义的规则中`))
     }
     let flag = _check(values[key],values,key);
     if(flag === true) return true;
@@ -47,7 +44,7 @@ function validate({schema={},rules={},errorTip={},nullTip={}}){
           rules.every((rule)=>check(rule,key,values,error));
           break;
         default:
-        console.error('暂不支持此类型规则');
+          throw (new TypeError('请使用String、RegExp、Function、Array定义你的验证规则'))
       }
     }
     let errorArry = Object.values(error);

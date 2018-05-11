@@ -1,5 +1,6 @@
 # redux-form-validating
 [![Build Status](https://travis-ci.org/lulei90/redux-form-validating.svg?branch=master)](https://travis-ci.org/lulei90/redux-form-validating)
+[![Coverage Status](https://coveralls.io/repos/github/lulei90/redux-form-validating/badge.svg?branch=master)](https://coveralls.io/github/lulei90/redux-form-validating?branch=master)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/lulei90/redux-form-validating/pulls)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/lulei90/redux-form-validating/blob/master/LICENSE)
 [![codebeat badge](https://codebeat.co/badges/16727cff-eabe-4eed-91e4-2bb8c1832a3b)](https://codebeat.co/projects/github-com-lulei90-redux-form-validating-master)
