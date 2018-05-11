@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import {defaultRules} from '../src/defaultOptions';
+import {defaultRules} from '../src/options';
 const {required,number,email,url,name,phone,bank,string,postcode,ignore,idcard} = defaultRules;
 
 describe('required规则测试',()=>{
