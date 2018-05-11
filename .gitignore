@@ -12,3 +12,7 @@ npm-debug.log*
 
 #webStorm
 /.idea
+
+#reporter
+/.nyc_output
+/coverage
