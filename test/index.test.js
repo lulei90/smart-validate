@@ -136,16 +136,25 @@ describe('函数返回值的提示',()=>{
     expect(error2.money).to.equal('金额不能小于0');
   })
 })
-describe('函数返回值的提示',()=>{
-  const syncValidate = validate({
-    schema:{
-      name:'null'
-    }
-  });
-  it('当验证规则是字符串，并且不在默认规则里时',()=>{
-    const error = syncValidate({
-      name:'123123'
+describe('当规则格式不正确，或是不存在于默认规则和自定义规则时，应当报错',()=>{
+  it('当规则格式有误时',()=>{
+    const syncValidate = validate({
+      schema:{
+        name:{
+          key:1
+        }
+      }
+    })
+    const errorFn=syncValidate.bind(syncValidate,{name:'123123'});
+    expect(errorFn).to.throw('请使用String、RegExp、Function、Array定义你的验证规则');
+  })
+  it('当验证规则是字符串，并且不存在于默认规则和自定义规则',()=>{
+    const syncValidate = validate({
+      schema:{
+        name:'null'
+      }
     });
-    expect(error.name).to.equal('null规则未定义');
+    const errorFn=syncValidate.bind(syncValidate,{name:'123123'});
+    expect(errorFn).to.throw('null规则不在默认和自定义的规则中');
   })
 })
