@@ -15,10 +15,10 @@ npm install --save redux-form-validating
 ```
 
 ## 基本使用
-```
+```js
 import React,{Component} from 'react';
 import {reduxForm ,Field} from 'redux-form';
-import validate from 'redux-form-validating'
+import validate from 'redux-form-validating';
 
 const syncValidate = validate({
   schema:{
