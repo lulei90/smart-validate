@@ -8,7 +8,7 @@
 
 [![NPM](https://nodei.co/npm/redux-form-validating.png)](https://nodei.co/npm/redux-form-validating/)
 
-**基于[redux-form](https://github.com/erikras/redux-form)的表单验证工具**
+**基于[redux-form](https://github.com/erikras/redux-form)的数据建模及数据验证工具**
 
 ## 开始
 ```
@@ -28,7 +28,7 @@ const syncValidate = validate({
   },
   errorTip:{
     userphone:'手机号格式有误'
-  }
+  },
   nullTip:{
     userphone:'手机号不能为空',
     userpwd:'密码不能为空',
@@ -63,5 +63,90 @@ export default class Form extends Component{
   }
 }
 ```
+## redux-form-validating API
+### `const syncValidate = validate (options)`
+
+创建验证，返回同步验证方法，返回的方法接收一个对象，对象包含需要验证的字段名和对应的值
+
+*`options`* 包含以下4种属性:
+
+* `schema`: 需要验证的模型 默认值为 `{}`
+* `rules`: 自定义的验证规则 默认值为 `{}`
+* `errorTip`: 自定义的错误提示 默认值为 `{}`
+* `nullTip`: 自定义的为空提示 默认值为 `{}`
+
+**示例：**
+
+```js
+const syncValidate = validate({
+  schema:{
+    username:'email',
+    password:'required'
+  },
+  errorTip:{
+    username:'用户名格式必须为邮箱'
+  },
+  nullTip:{
+    username:'请输入用户名',
+    password:'请输入密码'
+  }
+})
+const error = syncValidate({
+  name:'a@baskdjf',
+})
+console.log(error);
+
+// 返回结果如下
+// { username: '用户名格式必须为邮箱',password: '请输入密码',_error: '用户名格式必须为邮箱' }
+// 其中 _error 始终返回第一个错误，将被传递到redux-form装饰的组件上的props.error上
+```
+
+#### `schema`
+
+schema 接收一个对应于表单验证字段的键值对`{key:value}`
+
+* `key`为需要验证的字段名
+* `value`为对应字段需要验证的规则，可以包含以下几种类型：
+
+
+Type     | Describe
+-------- | -----------------------------------------------------------------------------------
+String   | String值为默认规则集或是在rules里面传入的自定义规则集的key值
+RegExp   | 将会根据传入的正则表达式去验证对应的字段值
+Function | 自定义的方法将被传入3个参数:`(value,values,key)`，`value`为当前验证的字段值，`values`为所有字段的键值对，`key`为当前验证字段的key值。会根据验证方法的返回值去判断此验证是否通过，当返回值仅为`true`时，验证通过，其它类型，验证失败。当返回值的类型为`string`时将被用作为错误提示
+Array    | 接收一组验证规则，数组中的每一项可以是以上3种类型之一。内部验证方法将会依次调用数组当中每一项的验证规则，当且仅当前一项验证规则通过时，才会去验证后续规则。当验证项中包含**'ignore'**时，内部验证方法将会在此项的值不为空的情况下才会去验证，为空将会忽略验证
+
+> 只要是在*schema*定义过的字段，默认内部验证方法都会去验证字段的值是否`=== undefined`,当且仅当字段的值不等于`undefined`时，内部验证方法才会去验证对应在*schema*中定义的规则。如果想先跳过`=== undefined`验证，请在定义的验证规则中包含`'ignore'`
+
+**示例:**
+
+```js
+const syncValidate = validate({
+  schema:{
+    username：'email',
+    age: /^([1-9]+[0-9]?){1,2}$/,
+    password:({length})=>{
+     if(length>=6 && length<=20){
+       return true;
+     }
+     return '密码长度必须大于等于6，小于等于20';
+    },
+    repassword:(value,values)=>{
+    	if(value === values['password']){
+    	  return true;
+    	}
+    	return '两次密码不一致';
+    },
+    bio:['ignore',({length})=>{
+      if(length<=20){
+        return true;
+      }
+      return false;
+    }]
+  }
+  //...
+})
+```
+
 
 
