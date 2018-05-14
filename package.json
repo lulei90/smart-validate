@@ -1,6 +1,6 @@
 {
   "name": "redux-form-validating",
-  "version": "0.0.5",
+  "version": "0.0.7",
   "description": "Simple validation with redux-form",
   "main": "lib/index.js",
   "files": [
