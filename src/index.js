@@ -15,13 +15,17 @@ function validate(options={}){
   function check(rule,key,values,error){
     const ruleType = _rules[rule] || rule;
     const _check = (ruleType.test && ruleType.test.bind(ruleType)) || ruleType;
-    if(typeof _check === 'string'){
+    if(typeof _check !== 'function'){
       throw (new TypeError(`${_check}规则不在默认和自定义的规则中`))
     }
     let flag = _check(values[key],values,key);
     if(flag === true) return true;
     //错误提示 可以是方法返回的字符串，初始化定义或默认
-    error[key] = flag || _errorTip[key] || _errorTip[rule] || _errorTip.def;
+    if(typeof flag === 'string'){
+      error[key] = flag
+    }else{
+      error[key] = _errorTip[key] || _errorTip[rule] || _errorTip.def;
+    }
     return false;
   }
   return function(values){
