@@ -157,6 +157,19 @@ describe('当规则格式不正确，或是不存在于默认规则和自定义�
     const errorFn=syncValidate.bind(syncValidate,{name:'123123'});
     expect(errorFn).to.throw('null规则不在默认和自定义的规则中');
   })
+  it('当验证规则里面存在数组嵌套时',()=>{
+    const syncValidate = validate({
+      schema:{
+        name:[['name',(value)=>{
+          return value.length>0
+        }],(value)=>{
+          return value.length<10
+        }]
+      }
+    });
+    const errorFn=syncValidate.bind(syncValidate,{name:'123123'});
+    expect(errorFn).to.throw('规则不在默认和自定义的规则中');
+  })
 })
 describe('当初始参数不对时',()=>{
   it('当初始参数为空时，默认验证不包含任何信息',()=>{

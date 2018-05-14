@@ -111,6 +111,7 @@ describe('string规则测试',()=>{
   it('当值是不带特殊字符的字符串时，应该是有效的',()=>{
     expect(string.test('zndqeirnmasnv')).to.be.true;
     expect(string.test('中文字符串测试')).to.be.true;
+    expect(string.test('12312asdf')).to.be.true;
     expect(string.test('带点.')).to.be.true;
     expect(string.test('带空格 测试')).to.be.true;
   })
