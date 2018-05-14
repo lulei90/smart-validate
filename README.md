@@ -101,6 +101,8 @@ console.log(error);
 // 其中 _error 始终返回第一个错误，将被传递到redux-form装饰的组件上的props.error上
 ```
 
+> 更多示例请参考:[test/index.test.js](https://github.com/lulei90/redux-form-validating/blob/master/test/index.test.js)
+
 #### `schema`
 
 schema 接收一个对应于表单验证字段的键值对`{key:value}`
@@ -159,7 +161,7 @@ const syncValidate = validate({
 required | 不能为空并且不能全由空字符组成
 number   | 数字类型包含正数、负数、整数、小数
 email    | 电子邮箱格式
-url       | 验证值是否为网址
+url      | 验证值是否为网址
 name     | 中文姓名格式，包含少数名族姓名中间的 **`·`**
 phone    | 为**1**开头的手机号（注：号段变化太快这里仅校验是否为1开头的11位手机号）
 bank     | 验证是否为银行卡号（注：仅校验位数）
