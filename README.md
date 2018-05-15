@@ -8,15 +8,16 @@
 
 [![NPM](https://nodei.co/npm/smart-validate.png)](https://nodei.co/npm/smart-validate/)
 
-**基于[redux-form](https://github.com/erikras/redux-form)的数据建模及数据验证工具**
+**简单快捷的数据建模及数据验证工具，可以配合[redux-form](https://github.com/erikras/redux-form)、[formik](https://github.com/jaredpalmer/formik)等完成快速表单验证**
 
 ## 开始
 ```
 npm install --save smart-validate
 ```
 
-## 基本使用
+## 基础使用
 ```js
+//配合redux-form
 import React,{Component} from 'react';
 import {reduxForm ,Field} from 'redux-form';
 import validate from 'smart-validate';
@@ -98,7 +99,7 @@ console.log(error);
 
 // 返回结果如下
 // { username: '用户名格式必须为邮箱',password: '请输入密码',_error: '用户名格式必须为邮箱' }
-// 其中 _error 始终返回第一个错误，将被传递到redux-form装饰的组件上的props.error上
+// 其中 _error 始终返回第一个错误提示，在redux-form中你可以在组件上的props.error上拿到该值
 ```
 
 > 更多示例请参考:[test/index.test.js](https://github.com/lulei90/smart-validate/blob/master/test/index.test.js)
