@@ -1,25 +1,25 @@
-# redux-form-validating
-[![Build Status](https://travis-ci.org/lulei90/redux-form-validating.svg?branch=master)](https://travis-ci.org/lulei90/redux-form-validating)
-[![Coverage Status](https://coveralls.io/repos/github/lulei90/redux-form-validating/badge.svg?branch=master)](https://coveralls.io/github/lulei90/redux-form-validating?branch=master)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/lulei90/redux-form-validating/pulls)
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/lulei90/redux-form-validating/blob/master/LICENSE)
-[![codebeat badge](https://codebeat.co/badges/16727cff-eabe-4eed-91e4-2bb8c1832a3b)](https://codebeat.co/projects/github-com-lulei90-redux-form-validating-master)
+# smart-validate
+[![Build Status](https://travis-ci.org/lulei90/smart-validate.svg?branch=master)](https://travis-ci.org/lulei90/smart-validate)
+[![Coverage Status](https://coveralls.io/repos/github/lulei90/smart-validate/badge.svg?branch=master)](https://coveralls.io/github/lulei90/smart-validate?branch=master)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/lulei90/smart-validate/pulls)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/lulei90/smart-validate/blob/master/LICENSE)
+[![codebeat badge](https://codebeat.co/badges/16727cff-eabe-4eed-91e4-2bb8c1832a3b)](https://codebeat.co/projects/github-com-lulei90-smart-validate-master)
 
 
-[![NPM](https://nodei.co/npm/redux-form-validating.png)](https://nodei.co/npm/redux-form-validating/)
+[![NPM](https://nodei.co/npm/smart-validate.png)](https://nodei.co/npm/smart-validate/)
 
 **基于[redux-form](https://github.com/erikras/redux-form)的数据建模及数据验证工具**
 
 ## 开始
 ```
-npm install --save redux-form-validating
+npm install --save smart-validate
 ```
 
 ## 基本使用
 ```js
 import React,{Component} from 'react';
 import {reduxForm ,Field} from 'redux-form';
-import validate from 'redux-form-validating';
+import validate from 'smart-validate';
 
 const syncValidate = validate({
   schema:{
@@ -101,7 +101,7 @@ console.log(error);
 // 其中 _error 始终返回第一个错误，将被传递到redux-form装饰的组件上的props.error上
 ```
 
-> 更多示例请参考:[test/index.test.js](https://github.com/lulei90/redux-form-validating/blob/master/test/index.test.js)
+> 更多示例请参考:[test/index.test.js](https://github.com/lulei90/smart-validate/blob/master/test/index.test.js)
 
 #### `schema`
 
@@ -151,7 +151,7 @@ const syncValidate = validate({
 ```
 
 ### 默认配置
-为了方便快速创建验证，默认内置了部分验证规则、错误提示和为空提示。详见[options.js](https://github.com/lulei90/redux-form-validating/blob/master/src/options.js)
+为了方便快速创建验证，默认内置了部分验证规则、错误提示和为空提示。详见[options.js](https://github.com/lulei90/smart-validate/blob/master/src/options.js)
 > 默认配置可以通过在初始化验证规则[validate(options)](#options)中的`rules`、`errorTip`、`nullTip`参数给覆盖 
 
 **<a name="rules"></a>默认规则包含如下:**  
