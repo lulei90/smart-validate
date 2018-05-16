@@ -129,16 +129,16 @@ const syncValidate = validate({
     username：'email',
     age: /^([1-9]+[0-9]?){1,2}$/,
     password:({length})=>{
-     if(length>=6 && length<=20){
-       return true;
-     }
-     return '密码长度必须大于等于6，小于等于20';
+      if(length>=6 && length<=20){
+        return true;
+      }
+      return '密码长度必须大于等于6，小于等于20';
     },
     repassword:(value,values)=>{
-    	if(value === values['password']){
-    	  return true;
-    	}
-    	return '两次密码不一致';
+      if(value === values['password']){
+        return true;
+      }
+      return '两次密码不一致';
     },
     bio:['ignore',({length})=>{
       if(length<=20){
