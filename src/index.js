@@ -1,4 +1,4 @@
-import { defaultRules,defaultErrorTip,defaultNullTip } from './options'
+import { defaultRules, defaultErrorTip, defaultNullTip } from './options';
 /***
  *
  * @param schema 需要验证的模型
@@ -7,56 +7,46 @@ import { defaultRules,defaultErrorTip,defaultNullTip } from './options'
  * @param nullTip 自定义的为空提示
  * @returns {Function} 返回一个加工好的验证方法 接受values对象用之前配置的验证计划来验证
  */
-function validate(options={}){
-  const {schema={},rules={},errorTip={},nullTip={}} = options;
-  const _rules=Object.assign({},defaultRules,rules);
-  const _errorTip=Object.assign({},defaultErrorTip,errorTip);
-  const _nullTip=Object.assign({},defaultNullTip,nullTip);
-  function check(rule,key,values,error){
+function validate(options = {}) {
+  const { schema = {}, rules = {}, errorTip = {}, nullTip = {} } = options;
+  const _rules = Object.assign({}, defaultRules, rules);
+  const _errorTip = Object.assign({}, defaultErrorTip, errorTip);
+  const _nullTip = Object.assign({}, defaultNullTip, nullTip);
+  function check(rule, key, values, error) {
+    const type = Object.prototype.toString.call(rule);
+    if (type === '[object Array]') {
+      return rule.every(item => check(item, key, values, error));
+    }
     const ruleType = _rules[rule] || rule;
     const _check = (ruleType.test && ruleType.test.bind(ruleType)) || ruleType;
-    if(typeof _check !== 'function'){
-      throw (new TypeError(`${_check}规则不在默认和自定义的规则中`))
+    if (typeof _check !== 'function') {
+      throw new TypeError(`${_check}规则不在默认和自定义的规则中`);
     }
-    let flag = _check(values[key],values,key);
-    if(flag === true) return true;
+    const flag = _check(values[key], values, key);
+    if (flag === true) return true;
     //错误提示 可以是方法返回的字符串，初始化定义或默认
-    if(typeof flag === 'string'){
-      error[key] = flag
-    }else{
+    if (typeof flag === 'string') {
+      error[key] = flag;
+    } else {
       error[key] = _errorTip[key] || _errorTip[rule] || _errorTip.def;
     }
     return false;
   }
-  return function(values){
-    let error = {};
-    for(const key in schema){
-      const rules =schema[key];
-      const type = Object.prototype.toString.call(rules);
-      if(values[key] === undefined){
-        if(type !=='[object Array]' || rules.indexOf('ignore') === -1){
-          error[key] = _nullTip[key] || _nullTip.def ;
-        }
-        continue
-      }
-      switch (type){
-        case '[object String]':
-        case '[object RegExp]':
-        case '[object Function]':
-          check(rules,key,values,error);
-          break;
-        case '[object Array]':
-          rules.every((rule)=>check(rule,key,values,error));
-          break;
-        default:
-          throw (new TypeError('请使用String、RegExp、Function、Array定义你的验证规则'))
+  return function(values) {
+    const error = {};
+    for (const key in schema) {
+      const rules = schema[key];
+      if (values[key] !== undefined) {
+        check(rules, key, values, error);
+      } else if (rules.toString().indexOf('ignore') === -1) {
+        error[key] = _nullTip[key] || _nullTip.def;
       }
     }
-    let errorArry = Object.values(error);
-    if(errorArry.length>0){
-      error._error = errorArry[0];
+    const errorArry = Object.values(error);
+    if (errorArry.length > 0) {
+      [error._error] = errorArry;
     }
-    return  error;
-  }
+    return error;
+  };
 }
 export default validate;
