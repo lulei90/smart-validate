@@ -39,10 +39,12 @@ function validate(options = {}) {
       if (values[key] !== undefined) {
         check(rules, key, values, error);
       } else if (rules.toString().indexOf('ignore') === -1) {
+        //当验证规则里面不包含ignore时，取为空提示
         error[key] = _nullTip[key] || _nullTip.def;
       }
     }
     const errorArry = Object.values(error);
+    //当存在错误提示时，把第一条提示赋值给_error属性（这里便于从redux-form装饰当组件props中取出）
     if (errorArry.length > 0) {
       [error._error] = errorArry;
     }
