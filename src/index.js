@@ -9,9 +9,10 @@ import { defaultRules, defaultErrorTip, defaultNullTip } from './options';
  */
 function validate(options = {}) {
   const { schema = {}, rules = {}, errorTip = {}, nullTip = {} } = options;
-  const _rules = Object.assign({}, defaultRules, rules);
-  const _errorTip = Object.assign({}, defaultErrorTip, errorTip);
-  const _nullTip = Object.assign({}, defaultNullTip, nullTip);
+  const assign = Object.assign;
+  const _rules = assign({}, defaultRules, rules);
+  const _errorTip = assign({}, defaultErrorTip, errorTip);
+  const _nullTip = assign({}, defaultNullTip, nullTip);
   function check(rule, key, values, error) {
     const type = Object.prototype.toString.call(rule);
     if (type === '[object Array]') {
@@ -36,7 +37,7 @@ function validate(options = {}) {
     const error = {};
     for (const key in schema) {
       const rules = schema[key];
-      if (values[key] !== undefined) {
+      if (values[key] !== void 0) {
         check(rules, key, values, error);
       } else if (rules.toString().indexOf('ignore') === -1) {
         //当验证规则里面不包含ignore时，取为空提示
