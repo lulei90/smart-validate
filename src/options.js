@@ -34,7 +34,7 @@ const defaultErrorTip = {
   number: '请输入正确的数字',
   email: '邮箱输入有误',
   url: '网址输入有误',
-  name: '姓名格式为2-12位的汉字',
+  name: '姓名格式有误',
   phone: '手机号输入有误',
   bank: '银行卡号输入有误',
   string: '不能输入特殊字符',
