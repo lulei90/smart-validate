@@ -1,123 +1,102 @@
 import { expect } from 'chai';
-import { defaultNullTip, defaultErrorTip } from '../src/options';
-import validate from '../src';
+import Validate from '../lib';
 
-let schema = {
-  name: 'name',
-  age: /^([1-9]+[0-9]?){1,2}$/,
-  email: 'email',
-  github: 'url',
-  bio: [
-    'ignore',
-    ({ length }) => {
-      if (length <= 0 || length > 10) {
-        return false;
-      }
-      return true;
+const scheme = {
+  name: {
+    rule: 'name',
+    errorTip: '姓名格式有误',
+    nullTip: '请输入姓名',
+  },
+  age: {
+    rule: /^([1-9]+[0-9]?){1,2}$/,
+    errorTip: '年龄格式有误',
+    nullTip: '请输入年龄',
+  },
+  email: {
+    rule: 'email',
+    errorTip: '邮箱格式有误',
+    nullTip: '请输入邮箱',
+  },
+  bio: {
+    rule: ({ length }) => {
+      return length >= 0 && length <= 10;
     },
-  ],
+    required: false,
+    errorTip: '请输入0到10个长度内到简介',
+  },
 };
-let errorValues = {
-  name: 'zh',
-  age: 100,
-  email: 'a@baskdjf',
-  github: 'github/lulei90',
-  bio: '这是一句将要超过10个长度的简介',
-};
-let errorTip = {
-  name: '填正常的中文姓名才行啊',
-  age: '这里支持的年龄必须在1-99之间哦',
-  email: '伙计邮箱格式填的不正确啊',
-  github: '很显然你的url格式错了',
-  bio: '简短介绍下就算了，不要超过10个长度',
-  _error: '填正常的中文姓名才行啊',
-};
-let nullTip = {
-  name: '姓名不能空着不填啊',
-  age: '年龄不能空着不填啊',
-  email: '邮箱不能空着不填啊',
-  github: 'github不能空着不填啊',
-  _error: '姓名不能空着不填啊',
-};
-let values = {
+const values = {
   name: '卢云俊',
   age: 28,
   email: 'lulei90@qq.com',
   github: 'https://github.com/lulei90',
   bio: '武汉的一名前端开发',
 };
+const errorValues = {
+  name: 'zh',
+  age: 100,
+  email: 'a@baskdjf',
+  github: 'github/lulei90',
+  bio: '这是一句将要超过10个长度的简介',
+};
 describe('正确值测试', () => {
-  const error = validate({ schema })(values);
+  const error = new Validate(scheme).validator(values);
   it('当值全都满足定义当规则时，应该返回的错误对象为空对象', () => {
     expect(error).to.eql({});
   });
 });
 describe('默认值提示验证测试', () => {
-  const syncValidate = validate({ schema });
+  const syncValidate = new Validate({
+    name: {
+      rule: 'name',
+    },
+    age: {
+      rule: /^([1-9]+[0-9]?){1,2}$/,
+    },
+    email: {
+      rule: 'email',
+    },
+    bio: {
+      rule: ({ length }) => {
+        return length >= 0 && length <= 10;
+      },
+    },
+  }).validator;
   it('默认空值提示测试', () => {
     const error = syncValidate({});
     for (const key in error) {
-      expect(error[key]).to.equal(defaultNullTip.def);
+      expect(error[key]).to.equal('数据不能为空');
     }
   });
   it('默认错误提示验证测试', () => {
     const error = syncValidate(errorValues);
     const errorLength = Object.keys(error).length;
-    const schemaLength = Object.keys(schema).length;
-    expect(errorLength).to.be.at.least(schemaLength);
+    const schemeLength = Object.keys(scheme).length;
+    expect(errorLength).to.be.at.equal(schemeLength);
     for (const key in error) {
-      if (key === '_error') continue;
-      if (typeof schema[key] === 'string') {
-        expect(error[key]).to.equal(defaultErrorTip[schema[key]]);
-      } else {
-        expect(error[key]).to.equal(defaultErrorTip.def);
-      }
+      expect(error[key]).to.equal('请填写正确信息');
     }
   });
 });
-
 describe('自定义提示测试', () => {
-  const syncValidate = validate({
-    schema,
-    errorTip,
-    nullTip,
-  });
+  const syncValidate = new Validate(scheme).validator;
   it('自定义空值测试', () => {
     const error = syncValidate({});
-    expect(error).to.eql(nullTip);
+    Object.keys(error).forEach(key => {
+      expect(error[key]).to.eql(scheme[key].nullTip);
+    });
   });
   it('自定义错误提示测试', () => {
     const error = syncValidate(errorValues);
-    expect(error).to.eql(errorTip);
+    Object.keys(error).forEach(key => {
+      expect(error[key]).to.eql(scheme[key].errorTip);
+    });
   });
 });
-
-describe('覆盖默认规则测试', () => {
-  const syncValidate = validate({
-    schema: {
-      name: 'name',
-    },
-    errorTip: {
-      name: '只能填英文了哦',
-    },
-    rules: {
-      name: /^[A-Za-z]+$/,
-    },
-  });
-  it('默认规则失效', () => {
-    const error = syncValidate({ name: '卢云俊' });
-    expect(error.name).to.equal('只能填英文了哦');
-  });
-  it('新规则有效', () => {
-    const error = syncValidate({ name: 'lulei' });
-    expect(error).to.eql({});
-  });
-});
-
 describe('函数返回值的提示', () => {
-  const syncValidate = validate({
-    schema: {
-      money: value => {
+  const syncValidate = new Validate({
+    money: {
+      rule: value => {
         if (value > 100) {
           return '金额不能大于100';
         }
@@ -127,7 +106,7 @@ describe('函数返回值的提示', () => {
         return true;
       },
     },
-  });
+  }).validator;
   it('当验证规则是函数时，如果验证失败并且函数返回值不等于false时提示信息为函数的返回值', () => {
     const error1 = syncValidate({
       money: 101,
@@ -140,30 +119,31 @@ describe('函数返回值的提示', () => {
   });
 });
 describe('当规则格式不正确，或是不存在于默认规则和自定义规则时，应当报错', () => {
+  let errorTip = 'not in default rules and custom rules';
   it('当规则格式有误时', () => {
-    const syncValidate = validate({
-      schema: {
-        name: {
+    const syncValidate = new Validate({
+      name: {
+        rule: {
           key: 1,
         },
       },
-    });
+    }).validator;
     const errorFn = syncValidate.bind(syncValidate, { name: '123123' });
-    expect(errorFn).to.throw('规则不在默认和自定义的规则中');
+    expect(errorFn).to.throw(errorTip);
   });
   it('当验证规则是字符串，并且不存在于默认规则和自定义规则', () => {
-    const syncValidate = validate({
-      schema: {
-        name: 'null',
+    const syncValidate = new Validate({
+      name: {
+        rule: 'null',
       },
-    });
+    }).validator;
     const errorFn = syncValidate.bind(syncValidate, { name: '123123' });
-    expect(errorFn).to.throw('规则不在默认和自定义的规则中');
+    expect(errorFn).to.throw(errorTip);
   });
   it('当验证规则里面存在数组嵌套时', () => {
-    const syncValidate = validate({
-      schema: {
-        name: [
+    const syncValidate = new Validate({
+      name: {
+        rule: [
           [
             'name',
             value => {
@@ -175,50 +155,61 @@ describe('当规则格式不正确，或是不存在于默认规则和自定义�
           },
         ],
       },
-    });
+    }).validator;
     const error = syncValidate({ name: '一二三四五六七' });
-    expect(error).to.eql({ name: '姓名有点长', _error: '姓名有点长' });
-  });
-  it('嵌套数组包含ignore时', () => {
-    const syncValidate = validate({
-      schema: {
-        name: [
-          [
-            'ignore',
-            'name',
-            value => {
-              return value.length > 0;
-            },
-          ],
-          value => {
-            return value.length <= 6;
-          },
-        ],
-      },
-    });
-    const error = syncValidate({});
-    expect(error).to.eql({});
+    expect(error).to.eql({ name: '姓名有点长' });
   });
 });
 describe('当初始参数不对时', () => {
   it('当初始参数为空时，默认验证不包含任何信息', () => {
-    const syncValidate = validate();
+    const syncValidate = new Validate().validator;
     const error = syncValidate(errorValues);
     expect(error).to.eql({});
   });
-  it('当初始参数类型不是预定类型时，默认验证不包含任何信息', () => {
-    const syncValidate = validate('123123');
+  it('当初始参数类型不包含rule', () => {
+    const syncValidate = new Validate('123123').validator;
     const error = syncValidate(errorValues);
-    expect(error).to.eql({});
-  });
-  it('当初始参数内部字段不是预定类型时', () => {
-    const syncValidate = validate({
-      schema: 1234,
-      nullTip: 'abcd',
-      errorTip: () => {},
-      rules: [],
+    Object.keys(error).forEach(key => {
+      expect(error[key]).to.eql('数据不能为空');
     });
-    const error = syncValidate(errorValues);
+  });
+  it('当初始参数类型不包含rule,并且required不为false', () => {
+    const syncValidate = new Validate({
+      test: {
+        nullTip: '空提示',
+      },
+    }).validator;
+    const error = syncValidate({});
+    expect(error).to.eql({
+      test: '空提示',
+    });
+  });
+  it('当初始参数不包含rule，并且required为false', () => {
+    const syncValidate = new Validate({
+      test: {
+        required: false,
+      },
+    }).validator;
+    const error = syncValidate({});
+    expect(error).to.eql({});
+  });
+});
+describe('添加默认规则测试', () => {
+  Validate.addRule({
+    englishName: /^[A-Za-z]+$/,
+  });
+  const syncValidate = new Validate({
+    name: {
+      rule: 'englishName',
+      errorTip: '填写英文哦',
+    },
+  }).validator;
+  it('默认规则失效', () => {
+    const error = syncValidate({ name: '卢云俊' });
+    expect(error.name).to.equal('填写英文哦');
+  });
+  it('新规则有效', () => {
+    const error = syncValidate({ name: 'lulei' });
     expect(error).to.eql({});
   });
 });

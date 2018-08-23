@@ -1,38 +1,7 @@
 import { expect } from 'chai';
-import { defaultRules } from '../src/options';
-const {
-  required,
-  number,
-  email,
-  url,
-  name,
-  phone,
-  bank,
-  string,
-  postcode,
-  ignore,
-  idcard,
-} = defaultRules;
+import Validate from '../lib';
 
-describe('required规则测试', () => {
-  it(`全由空字符组成的值，应该是无效的`, () => {
-    expect(required.test(' ')).to.be.false;
-    expect(required.test('  ')).to.be.false;
-    expect(required.test('\n')).to.be.false;
-    expect(required.test('\t')).to.be.false;
-  });
-  it(`任何非空字符值，应该是有效的`, () => {
-    expect(required.test(' 1')).to.be.true;
-    expect(required.test(' abc  ')).to.be.true;
-    expect(required.test(' 张三 ')).to.be.true;
-    expect(required.test('%')).to.be.true;
-    expect(required.test('^')).to.be.true;
-    expect(required.test('*')).to.be.true;
-    expect(required.test('$')).to.be.true;
-    expect(required.test(true)).to.be.true;
-    expect(required.test(false)).to.be.true;
-  });
-});
+const { number, email, url, name, phone, bank, string, postcode, idcard } = Validate.ruleType;
 
 describe('number规则测试', () => {
   it('当值是数字时，应该是有效的', () => {
@@ -140,17 +109,6 @@ describe('postcode规则测试', () => {
   });
   it('当值不是邮政编码时，应该是无效的', () => {
     expect(postcode.test('4344000')).to.be.false;
-  });
-});
-describe('ignore规则测试', () => {
-  it('无论值是什么，应该都有效', () => {
-    expect(ignore(true)).to.be.true;
-    expect(ignore(false)).to.be.true;
-    expect(ignore(undefined)).to.be.true;
-    expect(ignore(null)).to.be.true;
-    expect(ignore('')).to.be.true;
-    expect(ignore('abcd')).to.be.true;
-    expect(ignore(1231)).to.be.true;
   });
 });
 describe('idcard规则测试', () => {

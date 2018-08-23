@@ -1,9 +1,18 @@
-/***
- * schema = {rule,errorTip,nullTip,required}
+/**
+ * @author luyunjun <lulei90@qq.com>
+ * @class
  */
 class Validate {
-  constructor(schema) {
-    this.schema = schema;
+  /**
+   * @constructor
+   * @param {Object} scheme - 验证计划
+   * @param {String|Function|Array} scheme[].rule - 验证规则
+   * @param {Boolean} scheme[].required=true - 是否为必填项，默认为true
+   * @param {String} scheme[].nullTip=数据不能为空 - 当验证为空时的为空提示语
+   * @param {String} scheme[].errorTip=请填写正确信息 - 当验证不通过时的错误提示语
+   */
+  constructor(scheme = {}) {
+    this.scheme = scheme;
   }
   check(rule, key, values) {
     const type = Object.prototype.toString.call(rule);
@@ -13,36 +22,39 @@ class Validate {
     const ruleType = Validate.ruleType[rule] || rule;
     const _check = (ruleType.test && ruleType.test.bind(ruleType)) || ruleType;
     if (typeof _check !== 'function') {
-      throw new TypeError(`${_check} not in default and custom rules`);
+      throw new TypeError(`${_check} not in default rules and custom rules`);
     }
     const flag = _check(values[key], values, key);
     //错误提示 可以是方法返回的字符串，初始化定义或默认
     if (typeof flag === 'string') {
       this.error[key] = flag;
     } else if (!flag) {
-      this.error[key] = this.schema[key].errorTip || '请填写正确信息';
+      this.error[key] = this.scheme[key].errorTip || '请填写正确信息';
     }
     return flag === true;
   }
-  validator(values) {
-    const schema = this.schema;
+
+  /**
+   * @param values - 需要进行验证的字段值，将更具之前定义的验证计划匹配去进行对应验证
+   * @returns {Object} error - 返回根据验证计划验证不通过的对应字段的提示信息
+   */
+  validator = values => {
+    const { scheme } = this;
     this.error = {};
-    for (const key in schema) {
-      const { rule, nullTip, required = true } = schema[key];
-      // if (rule === void 0) throw new TypeError(`${key} must has own property rule`);
-      if (rule !== void 0 && values[key] !== void 0) {
-        this.check(rule, key, values);
-      } else if (required) {
-        //当验证规则里面不包含ignore时，取为空提示
-        this.error[key] = nullTip || '数据不能为空';
+    Object.keys(scheme).forEach(key => {
+      const { rule, nullTip, required = true } = scheme[key];
+      //当值非空时去验证值是否满足规则，否则如果required为true则进行非空提示
+      if (values[key] !== void 0) {
+        rule !== void 0 && this.check(rule, key, values);
+      } else {
+        required && (this.error[key] = nullTip || '数据不能为空');
       }
-    }
+    });
     return this.error;
-  }
+  };
 }
 
 Validate.ruleType = {
-  every: /[\w\W]+/,
   number: /^(-?\d+)(.\d+)?$/,
   email: /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/,
   url: /^(\w+:\/\/)?\w+(\.\w+)+.*$/,
@@ -73,7 +85,7 @@ Validate.ruleType = {
 };
 
 Validate.addRule = function(rule) {
-  Validate.ruleType = Object.assign({}, rule, Validate.ruleType);
+  Validate.ruleType = { ...rule, ...Validate.ruleType };
 };
 
 export default Validate;
