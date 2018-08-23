@@ -4,6 +4,49 @@
  */
 class Validate {
   /**
+   * 内部默认验证规则
+   * @static
+   */
+  static ruleType = {
+    number: /^(-?\d+)(.\d+)?$/,
+    email: /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/,
+    url: /^(\w+:\/\/)?\w+(\.\w+)+.*$/,
+    name: /^[\u4E00-\u9FA5]+(·| |.)?[\u4e00-\u9fa5]+$/,
+    phone: /^1[0-9]{10}$/,
+    bank: /^[0-9]{16,19}$/,
+    string: /^[\u4E00-\u9FA5\uf900-\ufa2d\w\s.]+$/,
+    postcode: /^[0-9]{6}$/,
+    idcard: value => {
+      const Wi = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2, 1]; // 加权因子;
+      const ValideCode = [1, 0, 10, 9, 8, 7, 6, 5, 4, 3, 2]; // 身份证验证位值，10代表X;
+      if (value.length === 18) {
+        const a_idCard = value.split(''); // 得到身份证数组
+        let sum = 0; // 声明加权求和变量
+        if (a_idCard[17].toLowerCase() === 'x') {
+          a_idCard[17] = 10; // 将最后位为x的验证码替换为10方便后续操作
+        }
+        for (let i = 0; i < 17; i++) {
+          sum += Wi[i] * a_idCard[i]; // 加权求和
+        }
+        const valCodePosition = sum % 11; // 得到验证码所位置
+        if (parseInt(a_idCard[17], 10) === ValideCode[valCodePosition]) {
+          return true;
+        }
+      }
+      return false;
+    },
+  };
+
+  /**
+   * 扩展默认验证规则，无法覆盖默认的验证规则
+   * @static
+   * @function
+   * @param {Object} rule - 自定义扩展验证规则
+   */
+  static addRule(rule) {
+    Validate.ruleType = { ...rule, ...Validate.ruleType };
+  }
+  /**
    * @constructor
    * @param {Object} scheme - 验证计划
    * @param {String|Function|Array} scheme[].rule - 验证规则
@@ -14,6 +57,15 @@ class Validate {
   constructor(scheme = {}) {
     this.scheme = scheme;
   }
+
+  /**
+   * 主要的验证方法，对当前进行调用的字段进行验证，如果失败则设置对应的提示信息
+   * @function
+   * @param rule - 当前验证规则
+   * @param key - 当前验证的字段名
+   * @param values - 所有接收验证的键值对象（用于自定义方法去完成比较复杂对验证逻辑）
+   * @returns {Boolean} - 返回当前验证的结果 true为验证通过，false为验证失败
+   */
   check(rule, key, values) {
     const type = Object.prototype.toString.call(rule);
     if (type === '[object Array]') {
@@ -53,39 +105,5 @@ class Validate {
     return this.error;
   };
 }
-
-Validate.ruleType = {
-  number: /^(-?\d+)(.\d+)?$/,
-  email: /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/,
-  url: /^(\w+:\/\/)?\w+(\.\w+)+.*$/,
-  name: /^[\u4E00-\u9FA5]+(·| |.)?[\u4e00-\u9fa5]+$/,
-  phone: /^1[0-9]{10}$/,
-  bank: /^[0-9]{16,19}$/,
-  string: /^[\u4E00-\u9FA5\uf900-\ufa2d\w\s.]+$/,
-  postcode: /^[0-9]{6}$/,
-  idcard: value => {
-    const Wi = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2, 1]; // 加权因子;
-    const ValideCode = [1, 0, 10, 9, 8, 7, 6, 5, 4, 3, 2]; // 身份证验证位值，10代表X;
-    if (value.length === 18) {
-      const a_idCard = value.split(''); // 得到身份证数组
-      let sum = 0; // 声明加权求和变量
-      if (a_idCard[17].toLowerCase() === 'x') {
-        a_idCard[17] = 10; // 将最后位为x的验证码替换为10方便后续操作
-      }
-      for (let i = 0; i < 17; i++) {
-        sum += Wi[i] * a_idCard[i]; // 加权求和
-      }
-      const valCodePosition = sum % 11; // 得到验证码所位置
-      if (parseInt(a_idCard[17], 10) === ValideCode[valCodePosition]) {
-        return true;
-      }
-    }
-    return false;
-  },
-};
-
-Validate.addRule = function(rule) {
-  Validate.ruleType = { ...rule, ...Validate.ruleType };
-};
 
 export default Validate;
