@@ -43,7 +43,7 @@ export default class Form extends Component {
     if (syncValidate.valid) {
       //... 提交
     } else {
-    	console.log(syncValidate.error)
+      console.log(syncValidate.error);
       //... 错误处理
     }
   };
@@ -78,8 +78,9 @@ export default class Form extends Component {
 
 接收验证计划并创建验证，返回一个实例对象
 
-### 参数 scheme <a name="scheme"></a> 
-_`scheme`_  为一个`key:value`组合的对象，`key`为需要验证的字段名，`value`包含以下 4 种属性:
+### 参数 scheme <a name="scheme"></a>
+
+_`scheme`_ 为一个`key:value`组合的对象，`key`为需要验证的字段名，`value`包含以下 4 种属性:
 
 - `rule`: 字段值的[验证规则](#rule)
 - `errorTip`: 自定义的错误提示 默认值为 `请填写正确信息`
@@ -168,6 +169,7 @@ const syncValidate = new Validate({
   //...
 });
 ```
+
 ### Validate.ruleType
 
 为了方便快速创建验证，默认内置了部分验证规则、错误提示和为空提示。详见[Validate.ruleType](https://github.com/lulei90/smart-validate/blob/master/src/index.js)
@@ -188,8 +190,7 @@ const syncValidate = new Validate({
 
 ### Validate.addRule(ruleObj)
 
-当默认内置规则不满足实际项目需要时，可以使用 _Validate.addRule_ 进行扩展，参数`ruleObj`为对应扩展的规则名和具体规则的键值对，**无法覆盖内置的Validate.ruleType**
-
+当默认内置规则不满足实际项目需要时，可以使用 _Validate.addRule_ 进行扩展，参数`ruleObj`为对应扩展的规则名和具体规则的键值对，**无法覆盖内置的 Validate.ruleType**
 
 ## Instance API
 
@@ -197,7 +198,7 @@ const syncValidate = new Validate({
 
 ### scheme : Object
 
-对象的验证计划，默认为创建对象时传入的scheme对象，可以修改，内部验证器每次验证将依据当下最新的scheme进行校验 详细参数[参考](#scheme)
+对象的验证计划，默认为创建对象时传入的 scheme 对象，可以修改，内部验证器每次验证将依据当下最新的 scheme 进行校验 详细参数[参考](#scheme)
 
 ### error : Object
 
@@ -213,7 +214,7 @@ const syncValidate = new Validate({
 
 ### tip : string
 
-验证提示，如果验证未通过，默认值为第一个字段的提示信息,便于移动端Toast验证交互方案
+验证提示，如果验证未通过，默认值为第一个字段的提示信息,便于移动端 Toast 验证交互方案
 
 ### pristine : boolean
 
