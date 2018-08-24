@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import Validate from '../lib';
+import Validate from '../src';
 
 const scheme = {
   name: {
@@ -119,10 +119,12 @@ describe('函数返回值的提示', () => {
       money: 101,
     });
     expect(error1.money).to.equal('金额不能大于100');
+    expect(syncValidate.tip).to.equal('金额不能大于100');
     const error2 = syncValidate.validator({
       money: -1,
     });
     expect(error2.money).to.equal('金额不能小于0');
+    expect(syncValidate.tip).to.equal('金额不能小于0');
   });
 });
 describe('当规则格式不正确，或是不存在于默认规则和自定义规则时，应当报错', () => {

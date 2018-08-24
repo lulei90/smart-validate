@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import Validate from '../lib';
+import Validate from '../src';
 
 const { number, email, url, name, phone, bank, string, postcode, idcard } = Validate.ruleType;
 
@@ -121,5 +121,6 @@ describe('idcard规则测试', () => {
     expect(idcard('15020019840112602X')).to.equal(false);
     expect(idcard('42102288100622')).to.equal(false);
     expect(idcard('15020019840112606X1')).to.equal(false);
+    expect(idcard('4306261985 9025247')).to.equal(false);
   });
 });

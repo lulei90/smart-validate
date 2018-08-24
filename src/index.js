@@ -26,7 +26,11 @@ class Validate {
           a_idCard[17] = 10; // 将最后位为x的验证码替换为10方便后续操作
         }
         for (let i = 0; i < 17; i++) {
-          sum += Wi[i] * a_idCard[i]; // 加权求和
+          if (/^\d$/.test(a_idCard[i])) {
+            sum += Wi[i] * a_idCard[i]; // 加权求和
+          } else {
+            return false;
+          }
         }
         const valCodePosition = sum % 11; // 得到验证码所位置
         if (parseInt(a_idCard[17], 10) === ValideCode[valCodePosition]) {
@@ -41,10 +45,10 @@ class Validate {
    * 扩展默认验证规则，无法覆盖默认的验证规则
    * @static
    * @function
-   * @param {Object} rule - 自定义扩展验证规则
+   * @param {Object} ruleObj - 自定义扩展验证规则
    */
-  static addRule(rule) {
-    Validate.ruleType = { ...rule, ...Validate.ruleType };
+  static addRule(ruleObj) {
+    Validate.ruleType = { ...ruleObj, ...Validate.ruleType };
   }
   /**
    * @constructor
@@ -114,7 +118,7 @@ class Validate {
       }
     });
     const _error = Object.values(this.error);
-    this.valid = !(_error.length > 0) || ((this.tip = _error[0]) && false);
+    this.valid = !(_error.length > 0) || (([this.tip] = _error) && false);
     return this.error;
   };
 }
