@@ -56,14 +56,21 @@ class Validate {
    */
   constructor(scheme = {}) {
     this.scheme = scheme;
+    //验证标志，为true时表示通过验证计划，为false表示验证失败
+    this.valid = false;
+    //验证提示，如果验证未通过，默认值为第一个字段的提示信息,便于移动端Toast验证交互方案
+    this.tip = '';
+    //初始标志，为true表示scheme从未验证过，即从未调用validator方法
+    this.pristine = true;
+    //错误提示集，所有验证失败的字段和对应到提示信息将被添加到这个对象中
+    this.error = {};
   }
-
   /**
    * 主要的验证方法，对当前进行调用的字段进行验证，如果失败则设置对应的提示信息
    * @function
-   * @param rule - 当前验证规则
-   * @param key - 当前验证的字段名
-   * @param values - 所有接收验证的键值对象（用于自定义方法去完成比较复杂对验证逻辑）
+   * @param {String|Function|Array} rule - 当前验证规则
+   * @param {String} key - 当前验证的字段名
+   * @param {Object} values - 所有接收验证的键值对象（用于自定义方法去完成比较复杂对验证逻辑）
    * @returns {Boolean} - 返回当前验证的结果 true为验证通过，false为验证失败
    */
   check(rule, key, values) {
@@ -87,21 +94,27 @@ class Validate {
   }
 
   /**
-   * @param values - 需要进行验证的字段值，将更具之前定义的验证计划匹配去进行对应验证
+   * 接收需要验证的键值对象，更具定义scheme依次进行验证
+   * @function
+   * @param {Object} values - 需要进行验证的字段值，将更具之前定义的验证计划匹配去进行对应验证
    * @returns {Object} error - 返回根据验证计划验证不通过的对应字段的提示信息
    */
   validator = values => {
     const { scheme } = this;
+    this.pristine = false;
+    this.tip = '';
     this.error = {};
     Object.keys(scheme).forEach(key => {
-      const { rule, nullTip, required = true } = scheme[key];
+      const { rule, nullTip = '数据不能为空', required = true } = scheme[key];
       //当值非空时去验证值是否满足规则，否则如果required为true则进行非空提示
       if (values[key] !== void 0) {
         rule !== void 0 && this.check(rule, key, values);
       } else {
-        required && (this.error[key] = nullTip || '数据不能为空');
+        required && (this.error[key] = nullTip);
       }
     });
+    const _error = Object.values(this.error);
+    this.valid = !(_error.length > 0) || ((this.tip = _error[0]) && false);
     return this.error;
   };
 }
