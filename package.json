@@ -1,6 +1,6 @@
 {
   "name": "smart-validate",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Simple validate with form",
   "main": "lib/index.js",
   "files": [
@@ -62,6 +62,7 @@
     "prettier": "^1.12.1",
     "rollup": "^0.64.1",
     "rollup-plugin-babel": "^3.0.7",
-    "rollup-plugin-commonjs": "^9.1.5"
+    "rollup-plugin-commonjs": "^9.1.5",
+    "rollup-plugin-uglify": "^4.0.0"
   }
 }

@@ -1,5 +1,6 @@
 import babel from 'rollup-plugin-babel';
 import commonjs from 'rollup-plugin-commonjs';
+import uglify from 'rollup-plugin-uglify';
 const config = {
   input: 'src/index.js',
   plugins: [
@@ -10,6 +11,7 @@ const config = {
       plugins: ['transform-class-properties'],
     }),
     commonjs(),
+    uglify.uglify(),
   ],
   output: {
     file: 'lib/index.js',
