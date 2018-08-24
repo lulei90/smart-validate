@@ -1,55 +1,126 @@
-import { defaultRules, defaultErrorTip, defaultNullTip } from './options';
-/***
- *
- * @param schema 需要验证的模型
- * @param rules 自定义的验证规则
- * @param errorTip 自定义的错误提示
- * @param nullTip 自定义的为空提示
- * @returns {Function} 返回一个加工好的验证方法 接受values对象用之前配置的验证计划来验证
+/**
+ * @author luyunjun <lulei90@qq.com>
+ * @class
  */
-function validate(options = {}) {
-  const { schema = {}, rules = {}, errorTip = {}, nullTip = {} } = options;
-  const assign = Object.assign;
-  const _rules = assign({}, defaultRules, rules);
-  const _errorTip = assign({}, defaultErrorTip, errorTip);
-  const _nullTip = assign({}, defaultNullTip, nullTip);
-  function check(rule, key, values, error) {
+class Validate {
+  /**
+   * 内部默认验证规则
+   * @static
+   */
+  static ruleType = {
+    number: /^(-?\d+)(.\d+)?$/,
+    email: /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/,
+    url: /^(\w+:\/\/)?\w+(\.\w+)+.*$/,
+    name: /^[\u4E00-\u9FA5]+(·| |.)?[\u4e00-\u9fa5]+$/,
+    phone: /^1[0-9]{10}$/,
+    bank: /^[0-9]{16,19}$/,
+    string: /^[\u4E00-\u9FA5\uf900-\ufa2d\w\s.]+$/,
+    postcode: /^[0-9]{6}$/,
+    idcard: value => {
+      const Wi = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2, 1]; // 加权因子;
+      const ValideCode = [1, 0, 10, 9, 8, 7, 6, 5, 4, 3, 2]; // 身份证验证位值，10代表X;
+      if (value.length === 18) {
+        const a_idCard = value.split(''); // 得到身份证数组
+        let sum = 0; // 声明加权求和变量
+        if (a_idCard[17].toLowerCase() === 'x') {
+          a_idCard[17] = 10; // 将最后位为x的验证码替换为10方便后续操作
+        }
+        for (let i = 0; i < 17; i++) {
+          if (/^\d$/.test(a_idCard[i])) {
+            sum += Wi[i] * a_idCard[i]; // 加权求和
+          } else {
+            return false;
+          }
+        }
+        const valCodePosition = sum % 11; // 得到验证码所位置
+        if (parseInt(a_idCard[17], 10) === ValideCode[valCodePosition]) {
+          return true;
+        }
+      }
+      return false;
+    },
+  };
+
+  /**
+   * 扩展默认验证规则，无法覆盖默认的验证规则
+   * @static
+   * @function
+   * @param {Object} ruleObj - 自定义扩展验证规则
+   */
+  static addRule(ruleObj) {
+    Validate.ruleType = { ...ruleObj, ...Validate.ruleType };
+  }
+  /**
+   * @constructor
+   * @param {Object} scheme - 验证计划
+   * @param {String|Function|Array} scheme[].rule - 验证规则
+   * @param {Boolean} scheme[].required=true - 是否为必填项，默认为true
+   * @param {String} scheme[].nullTip=数据不能为空 - 当验证为空时的为空提示语
+   * @param {String} scheme[].errorTip=请填写正确信息 - 当验证不通过时的错误提示语
+   */
+  constructor(scheme = {}) {
+    this.scheme = scheme;
+    //验证标志，为true时表示通过验证计划，为false表示验证失败
+    this.valid = false;
+    //验证提示，如果验证未通过，默认值为第一个字段的提示信息,便于移动端Toast验证交互方案
+    this.tip = '';
+    //初始标志，为true表示scheme从未验证过，即从未调用validator方法
+    this.pristine = true;
+    //错误提示集，所有验证失败的字段和对应到提示信息将被添加到这个对象中
+    this.error = {};
+  }
+  /**
+   * 主要的验证方法，对当前进行调用的字段进行验证，如果失败则设置对应的提示信息
+   * @function
+   * @param {String|Function|Array} rule - 当前验证规则
+   * @param {String} key - 当前验证的字段名
+   * @param {Object} values - 所有接收验证的键值对象（用于自定义方法去完成比较复杂对验证逻辑）
+   * @returns {Boolean} - 返回当前验证的结果 true为验证通过，false为验证失败
+   */
+  check(rule, key, values) {
     const type = Object.prototype.toString.call(rule);
     if (type === '[object Array]') {
-      return rule.every(item => check(item, key, values, error));
+      return rule.every(item => this.check(item, key, values));
     }
-    const ruleType = _rules[rule] || rule;
+    const ruleType = Validate.ruleType[rule] || rule;
     const _check = (ruleType.test && ruleType.test.bind(ruleType)) || ruleType;
     if (typeof _check !== 'function') {
-      throw new TypeError(`${_check}规则不在默认和自定义的规则中`);
+      throw new TypeError(`${_check} not in default rules and custom rules`);
     }
     const flag = _check(values[key], values, key);
-    if (flag === true) return true;
     //错误提示 可以是方法返回的字符串，初始化定义或默认
     if (typeof flag === 'string') {
-      error[key] = flag;
-    } else {
-      error[key] = _errorTip[key] || _errorTip[rule] || _errorTip.def;
+      this.error[key] = flag;
+    } else if (!flag) {
+      this.error[key] = this.scheme[key].errorTip || '请填写正确信息';
     }
-    return false;
+    return flag === true;
   }
-  return function(values) {
-    const error = {};
-    for (const key in schema) {
-      const rules = schema[key];
+
+  /**
+   * 接收需要验证的键值对象，更具定义scheme依次进行验证
+   * @function
+   * @param {Object} values - 需要进行验证的字段值，将更具之前定义的验证计划匹配去进行对应验证
+   * @returns {Object} error - 返回根据验证计划验证不通过的对应字段的提示信息
+   */
+  validator = values => {
+    const { scheme } = this;
+    this.pristine = false;
+    this.tip = '';
+    this.error = {};
+    Object.keys(scheme).forEach(key => {
+      const { rule, nullTip = '数据不能为空', required = true } = scheme[key];
+      //当值非空时去验证值是否满足规则，否则如果required为true则进行非空提示
       if (values[key] !== void 0) {
-        check(rules, key, values, error);
-      } else if (rules.toString().indexOf('ignore') === -1) {
-        //当验证规则里面不包含ignore时，取为空提示
-        error[key] = _nullTip[key] || _nullTip.def;
+        rule !== void 0 && this.check(rule, key, values);
+      } else {
+        required && (this.error[key] = nullTip);
       }
-    }
-    const errorArry = Object.values(error);
-    //当存在错误提示时，把第一条提示赋值给_error属性（这里便于从redux-form装饰当组件props中取出）
-    if (errorArry.length > 0) {
-      [error._error] = errorArry;
-    }
-    return error;
+    });
+    const _error = Object.values(this.error);
+    this.valid = !(_error.length > 0) || (([this.tip] = _error) && false);
+    return this.error;
   };
 }
-export default validate;
+
+export default Validate;
