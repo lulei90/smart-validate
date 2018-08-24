@@ -33,17 +33,17 @@ const syncValidate = new Validate({
   userpwd: {
     nullTip: '密码不能为空',
   },
-}).validator;
+});
 @reduxForm({
   form: 'login',
-  validate: syncValidate,
+  validate: syncValidate.validator,
 })
 export default class Form extends Component {
   submitForm = values => {
-    const { valid } = this.props;
-    if (valid) {
+    if (syncValidate.valid) {
       //... 提交
     } else {
+    	console.log(syncValidate.error)
       //... 错误处理
     }
   };
@@ -76,9 +76,10 @@ export default class Form extends Component {
 
 ### `const syncValidate = new Validate (scheme)`
 
-接收验证计划并创建验证，返回验证对象
+接收验证计划并创建验证，返回一个实例对象
 
-_`scheme`_ <a name="scheme"></a> 为一个`key:value`组合的对象，`key`为需要验证的字段名，`value`包含以下 4 种属性:
+### 参数 scheme <a name="scheme"></a> 
+_`scheme`_  为一个`key:value`组合的对象，`key`为需要验证的字段名，`value`包含以下 4 种属性:
 
 - `rule`: 字段值的[验证规则](#rule)
 - `errorTip`: 自定义的错误提示 默认值为 `请填写正确信息`
@@ -167,12 +168,9 @@ const syncValidate = new Validate({
   //...
 });
 ```
+### Validate.ruleType
 
-### 默认配置
-
-为了方便快速创建验证，默认内置了部分验证规则、错误提示和为空提示。详见[options.js](https://github.com/lulei90/smart-validate/blob/master/src/options.js)
-
-> 默认配置可以通过在初始化验证规则[validate(options)](#options)中的`rules`、`errorTip`、`nullTip`参数给覆盖
+为了方便快速创建验证，默认内置了部分验证规则、错误提示和为空提示。详见[Validate.ruleType](https://github.com/lulei90/smart-validate/blob/master/src/index.js)
 
 **<a name="rules"></a>默认规则包含如下:**
 
@@ -187,3 +185,36 @@ const syncValidate = new Validate({
 | string   | 不包含特殊字符                                                               |
 | postcode | 邮箱格式                                                                     |
 | idcard   | 身份证号                                                                     |
+
+### Validate.addRule(ruleObj)
+
+当默认内置规则不满足实际项目需要时，可以使用 _Validate.addRule_ 进行扩展，参数`ruleObj`为对应扩展的规则名和具体规则的键值对，**无法覆盖内置的Validate.ruleType**
+
+
+## Instance API
+
+实例对象包含以下属性和方法
+
+### scheme : Object
+
+对象的验证计划，默认为创建对象时传入的scheme对象，可以修改，内部验证器每次验证将依据当下最新的scheme进行校验 详细参数[参考](#scheme)
+
+### error : Object
+
+错误对象，默认为`{}`,当验证不通过时为对应的字段和错误提示组成的键值对，验证通过为`{}`
+
+### validator(values) : Object
+
+验证器，接收待验证的对象 例如`{ field1: 'value1', field2: 'value2' }`，并依据 `scheme`进行校验，并返回校验的错误对象
+
+### valid : boolean
+
+对验证结果的一次标志，`true`为验证通过，`false`为验证不通过，初始为`false`。可依据此熟悉判断一次验证的结果
+
+### tip : string
+
+验证提示，如果验证未通过，默认值为第一个字段的提示信息,便于移动端Toast验证交互方案
+
+### pristine : boolean
+
+初始标志，为`true`表示`scheme`从未验证过，即从未调用`validator`方法
