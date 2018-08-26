@@ -22,13 +22,9 @@ class Validate {
       const valideCode = [1, 0, 10, 9, 8, 7, 6, 5, 4, 3, 2]; // 身份证验证位值，10代表X;
       const a_idCard = value.split(''); // 得到身份证数组
       let code = a_idCard.pop();
-      if (code.toLowerCase() === 'x') {
-        code = 10; // 将最后位为x的验证码替换为10方便后续操作
-      }
-      // 加权求和
-      const sum = a_idCard.reduce((pre, current, key) => pre + Wi[key] * current, 0);
-      const valCodePosition = sum % 11; // 得到验证码所位置
-      return parseInt(code, 10) === valideCode[valCodePosition];
+      if (code.toLowerCase() === 'x') code = 10; // 将最后位为x的验证码替换为10方便后续操作
+      const sum = a_idCard.reduce((pre, current, key) => pre + Wi[key] * current, 0); // 加权求和
+      return parseInt(code, 10) === valideCode[sum % 11];
     },
   };
 
