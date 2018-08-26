@@ -1,6 +1,6 @@
 {
   "name": "smart-validate",
-  "version": "0.1.2",
+  "version": "1.0.0",
   "description": "Simple validate with form",
   "main": "lib/index.js",
   "files": [
