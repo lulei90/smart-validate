@@ -16,6 +16,7 @@ class Validate {
     bank: /^[0-9]{16,19}$/,
     string: /^[\u4E00-\u9FA5\uf900-\ufa2d\w\s.]+$/,
     postcode: /^[0-9]{6}$/,
+    password: /(?!^[0-9]{6,12}$)(?!^[a-z]{6,12}$)(?!^[A-Z]{6,12}$)^[0-9A-Za-z]{6,12}$/,
     idcard: value => {
       if (!/^\d{17}([0-9]|X|x)$/.test(value)) return false;
       const Wi = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2, 1]; // 加权因子;

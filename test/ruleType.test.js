@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import Validate from '../src';
 
-const { number, email, url, name, phone, bank, string, postcode, idcard } = Validate.ruleType;
+const { number, email, url, name, phone, bank, string, postcode, password, idcard } = Validate.ruleType;
 
 describe('number规则测试', () => {
   it('当值是数字时，应该是有效的', () => {
@@ -104,11 +104,22 @@ describe('string规则测试', () => {
 
 describe('postcode规则测试', () => {
   it('当值是邮政编码时，应该是有效的', () => {
-    expect('434400').to.match(string);
-    expect('100000').to.match(string);
+    expect('434400').to.match(postcode);
+    expect('100000').to.match(postcode);
   });
   it('当值不是邮政编码时，应该是无效的', () => {
     expect('4344000').to.not.match(postcode);
+  });
+});
+describe('password规则测试', () => {
+  it('密码长度6-12位，由数字、小写字符和大写字母组成，但必须至少包括2种字符', () => {
+    expect('ABCDEF234').to.match(password);
+    expect('abcdEF234').to.match(password);
+  });
+  it('当密码为纯数字，纯小写字母，纯大写字母时无效', () => {
+    expect('1234567').to.not.match(password);
+    expect('abcdef').to.not.match(password);
+    expect('ABCDEFGH').to.not.match(password);
   });
 });
 describe('idcard规则测试', () => {
