@@ -115,6 +115,8 @@ describe('password规则测试', () => {
   it('密码长度6-12位，由数字、小写字符和大写字母组成，但必须至少包括2种字符', () => {
     expect('ABCDEF234').to.match(password);
     expect('abcdEF234').to.match(password);
+    expect('abcd234').to.match(password);
+    expect('abcdEF').to.match(password);
   });
   it('当密码为纯数字，纯小写字母，纯大写字母时无效', () => {
     expect('1234567').to.not.match(password);

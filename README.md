@@ -186,6 +186,7 @@ const syncValidate = new Validate({
 | bank     | 验证是否为银行卡号（注：仅校验位数）                                         |
 | string   | 不包含特殊字符                                                               |
 | postcode | 邮箱格式                                                                     |
+| password | 验证密码长度为6-12位，由数字、小写字符和大写字母组成，但必须至少包括2种字符                                                                     |
 | idcard   | 身份证号                                                                     |
 
 ### Validate.addRule(ruleObj)
